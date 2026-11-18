@@ -7,6 +7,7 @@ def connect():
     db=sqlite3.connect(DATA_DIR/"records.db",timeout=20)
     db.execute("PRAGMA journal_mode=WAL")
     db.execute("CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY,payload TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,decision TEXT NOT NULL DEFAULT '待复核')")
+    db.execute("CREATE TABLE IF NOT EXISTS visas (run_id TEXT NOT NULL,version INTEGER NOT NULL,correction_key TEXT NOT NULL,basis TEXT NOT NULL DEFAULT '{}',payload TEXT NOT NULL,created_at TEXT NOT NULL,PRIMARY KEY (run_id,version),UNIQUE (run_id,correction_key))")
     return db
 def save(run_id,payload):
     with connect() as db:
@@ -28,4 +29,7 @@ def review(run_id,version,decision):
         if cursor.rowcount!=1:
             if not db.execute("SELECT 1 FROM runs WHERE id=?",(run_id,)).fetchone(): raise DomainError("NOT_FOUND","批次不存在",404)
             raise DomainError("STALE_VERSION","版本已更新，请刷新",409)
+        if decision=="已复核":
+            from app.visa import freeze_signed
+            freeze_signed(db,run_id,json.loads(db.execute("SELECT payload FROM runs WHERE id=?",(run_id,)).fetchone()[0]))
     return get(run_id)

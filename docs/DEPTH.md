@@ -26,6 +26,8 @@
 | TRAP-14 | 重复键冲突 | 后写覆盖 | 保留首条并隔离冲突行 | `app/modules/m1_claims/rules.py` | `tests/test_m1.py::test_duplicate_conflict_real_sample` |
 | TRAP-18 | 空态三态 | 一律成功 | 分别错误码 | `app/modules/m1_claims/rules.py` | `tests/test_m1.py::test_three_empty_states` |
 | TRAP-26 | 旧版本提交 | 覆盖新结果 | 版本条件更新 | `app/store.py` | `tests/test_e2e.py::test_stale_review_409` |
+| TRAP-29 | 补正覆盖签认件 | 原件不可恢复 | 签认事务内冻结v1，补正只增新版 | `app/visa.py` | `tests/test_visa.py::test_correction_issues_new_current_and_keeps_original` |
+| TRAP-30 | 补正重试 | 同期多个正式金额 | 内容幂等键唯一约束，重试不新增版本 | `app/visa.py` | `tests/test_visa.py::test_same_correction_retry_adds_no_version` |
 | TRAP-06 | 全角累计量 | 转换失败 | Decimal归一 | `app/values.py` | `tests/test_m2.py::test_fullwidth_quantity` |
 | TRAP-07 | 累计量空值 | 按零冲回 | 隔离缺失 | `app/values.py` | `tests/test_m2.py::test_real_null_not_zero` |
 | TRAP-10 | 分币舍入 | 浮点误差 | 分项量化后净额守恒 | `app/modules/m5_deductions/rules.py` | `tests/test_m5.py::test_fraction_rounds_to_cent` |
